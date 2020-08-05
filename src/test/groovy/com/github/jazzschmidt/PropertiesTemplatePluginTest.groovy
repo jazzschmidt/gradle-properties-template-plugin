@@ -17,7 +17,6 @@ class PropertiesTemplatePluginTest extends Specification {
 
         then:
         project.extensions.findByName(PropertiesTemplateExtension.EXTENSION_NAME)
-        project.tasks.findByName('initializeProperties')
     }
 
     def 'aborts when template does not exist'() {

@@ -14,8 +14,6 @@ class PropertiesTemplatePlugin implements Plugin<Project> {
         def extension = project.extensions.create(PropertiesTemplateExtension.EXTENSION_NAME, PropertiesTemplateExtension)
         extension.template = project.file('gradle.template.properties')
 
-        project.task('initializeProperties')
-
         project.afterEvaluate {
             if (!extension.template.exists()) {
                 fail("Properties template file does not exist: ${extension.template.name}")
