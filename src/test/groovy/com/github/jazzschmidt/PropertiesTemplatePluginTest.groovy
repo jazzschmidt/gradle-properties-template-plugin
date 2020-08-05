@@ -6,7 +6,7 @@ import spock.lang.Specification
 
 class PropertiesTemplatePluginTest extends Specification {
 
-    def 'applying the plugin adds configuration'() {
+    def 'applying the plugin adds configuration and init task'() {
         given:
         def project = project
 
@@ -15,6 +15,7 @@ class PropertiesTemplatePluginTest extends Specification {
 
         then:
         project.extensions.findByName(PropertiesTemplateExtension.EXTENSION_NAME)
+        project.tasks.findByName('initializeProperties')
     }
 
     Project getProject() {

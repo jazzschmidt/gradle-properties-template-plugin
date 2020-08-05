@@ -8,6 +8,8 @@ class PropertiesTemplatePlugin implements Plugin<Project> {
     @Override
     void apply(final Project project) {
         project.extensions.create(PropertiesTemplateExtension.EXTENSION_NAME, PropertiesTemplateExtension)
+
+        project.task('initializeProperties')
     }
 
 }
