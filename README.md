@@ -1,4 +1,5 @@
-# Gradle Properties Template Plugin ![CI with Gradle](https://github.com/jazzschmidt/gradle-properties-template-plugin/workflows/CI%20with%20Gradle/badge.svg?branch=master)
+# Gradle Properties Template Plugin ![CI with Gradle](https://github.com/jazzschmidt/gradle-properties-template-plugin/workflows/CI%20with%20Gradle/badge.svg?branch=master) <a href="https://plugins.gradle.org/plugin/com.github.jazzschmidt.properties-template-plugin"><img src="https://img.shields.io/badge/Gradle%20Plugin-1.0--SNAPSHOT-brightgreen" /></a>
+
 Validates project properties against a template file. Suppose you add a task, that requires a
 new project property set to run properly, it is then neccessary to inform your colleagues,
 configure CI, document your changes and so on. In long-term projects those are at some point
