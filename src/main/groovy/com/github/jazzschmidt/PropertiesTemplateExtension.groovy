@@ -4,4 +4,6 @@ class PropertiesTemplateExtension {
 
     final static String EXTENSION_NAME = 'propertiesTemplate'
 
+    File template
+
 }
