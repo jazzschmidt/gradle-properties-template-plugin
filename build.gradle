@@ -1,0 +1,34 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'groovy'
+}
+
+group 'com.github.jazzschmidt'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+gradlePlugin {
+    plugins {
+        propertiesTemplatePlugin {
+            id = 'com.github.jazzschmidt.properties-template-plugin'
+            implementationClass = 'com.github.jazzschmidt.PropertiesTemplatePlugin'
+        }
+    }
+}
+
+
+dependencies {
+    testCompile "org.codehaus.groovy:groovy-all:2.5.8"
+    testCompile platform("org.spockframework:spock-bom:2.0-M1-groovy-2.5")
+    testCompile "org.spockframework:spock-core"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
