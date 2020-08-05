@@ -8,7 +8,7 @@ import spock.lang.Specification
 class PropertiesTemplatePluginTest extends Specification {
 
 
-    def 'applying the plugin adds configuration and init task'() {
+    def 'applying the plugin adds configuration'() {
         given:
         def project = createProject()
 
