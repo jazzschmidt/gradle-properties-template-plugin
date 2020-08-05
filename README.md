@@ -25,7 +25,16 @@ $ ./gradlew build -Pcustom.prop.verbose=false
 FAILURE: Build failed with an exception.
 
 * What went wrong:
-The following properties must be set before building:
-- custom.prop.name (The item that shall be greeted, default: World)
-- custom.prop.greeting (default: Hello ${custom.prop.name})
+A problem occurred configuring root project 'my-project'.
+> The following properties must be set before building:
+   - custom.prop.name (The item that shall be greeted, default: World)
+   - custom.prop.greeting (default: Hello ${custom.prop.name})
+
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 1s
+
 ```
