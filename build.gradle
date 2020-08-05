@@ -1,6 +1,7 @@
 plugins {
     id 'java-gradle-plugin'
     id 'groovy'
+    id 'com.gradle.plugin-publish' version '0.12.0'
 }
 
 group 'com.github.jazzschmidt'
@@ -14,9 +15,20 @@ gradlePlugin {
     plugins {
         propertiesTemplatePlugin {
             id = 'com.github.jazzschmidt.properties-template-plugin'
+            displayName = 'Propeties Template Plugin'
+            description = 'Validates project properties against a template file to ensure required ones are present'
             implementationClass = 'com.github.jazzschmidt.PropertiesTemplatePlugin'
         }
     }
+}
+
+pluginBundle {
+    website = 'https://github.com/jazzschmidt/gradle-properties-template-plugin'
+    vcsUrl = 'https://github.com/jazzschmidt/gradle-properties-template-plugin'
+    tags = [
+            'properties', 'project', 'template', 'plugin', 'setup', 'prepare',
+            'ci', 'continuous', 'integration', 'secrets', 'default', 'values'
+    ]
 }
 
 
