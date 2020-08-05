@@ -18,21 +18,66 @@ class PropertiesTemplatePlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             if (!extension.template.exists()) {
-                fail()
+                fail("Properties template file does not exist: ${extension.template.name}")
             }
 
-            extension.template.text.readLines().each { String line ->
-                String property = line.tokenize('=').first()
+            List<String> missingProperties = []
 
-                if (!project.hasProperty(property)) {
-                    fail(property)
+            extension.template.text.readLines().each { String line ->
+                def property = propertyFromTemplate(line)
+
+                if (!project.hasProperty(property.name)) {
+                    missingProperties += property as String
                 }
+            }
+
+            if (!missingProperties.empty) {
+                String error = "The following properties must be set before building:\n" +
+                        missingProperties.collect { " - $it" }.join("\n")
+                fail(error)
             }
         }
     }
 
-    void fail(String p = '') {
-        throw new ConfigurationCycleException("Property $p not set!")
+    void fail(String msg) {
+        throw new ConfigurationCycleException(msg)
     }
 
+    ProjectProperty propertyFromTemplate(String line) {
+        def pattern = ~/^([^=]+)=([^#]*)#?(.*)$/
+        def matcher = line =~ pattern
+
+        matcher.find()
+
+        new ProjectProperty(
+                name: matcher.group(1).trim(),
+                defaultValue: matcher.group(2).trim(),
+                comment: matcher.group(3).trim()
+        )
+    }
+
+    private class ProjectProperty {
+
+        String name, defaultValue, comment
+
+        @Override
+        String toString() {
+            def text = name
+            List<String> appendix = []
+
+            if (!comment.empty) {
+                appendix += comment
+            }
+
+            if (!defaultValue.empty) {
+                appendix += "default: $defaultValue"
+            }
+
+            if (!appendix.empty) {
+                text += " (${appendix.join(', ')})"
+            }
+
+            return text
+        }
+    }
 }
