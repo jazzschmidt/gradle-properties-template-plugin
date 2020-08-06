@@ -2,7 +2,11 @@ package com.github.jazzschmidt
 
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.rules.TemporaryFolder
+import spock.lang.PendingFeature
 import spock.lang.Specification
+import spock.util.environment.OperatingSystem
+
+import java.util.concurrent.TimeUnit
 
 class PluginIntegrationTest extends Specification {
 
@@ -18,7 +22,7 @@ class PluginIntegrationTest extends Specification {
         templateFile = testProjectDir.newFile('gradle.template.properties')
     }
 
-    def "shows missing properties"() {
+    def "validateProperties task fails the build on missing properties"() {
         given:
         createProject([greetend: 'World # Who shall be greeted', greeting: 'Hello']) {
             """\
@@ -29,11 +33,56 @@ class PluginIntegrationTest extends Specification {
         }
 
         when:
-        def result = buildAndFail()
+        def result = buildAndFail('validateProperties')
 
         then:
-        result.output.contains('greetend')
+        result.output.contains('greeted')
         result.output.contains('greeting')
+    }
+
+    @PendingFeature
+    def "validateProperties task continues the build on present properties"() {
+        given:
+        createProject([greetend: 'World # Who shall be greeted', greeting: 'Hello']) {
+            """\
+            plugins {
+                id 'com.github.jazzschmidt.properties-template-plugin'
+            }
+            """
+        }
+
+        when:
+        def result = build('validateProperties', '-Pgreetend=World', '-Pgreeting=Hello')
+
+        then:
+        !result.output.contains('greeted')
+        !result.output.contains('greeting')
+    }
+
+    @PendingFeature
+    def "validateProperties emits warning when gradle.properties is versioned"() {
+        given:
+        createProject([:]) {
+            """\
+            plugins {
+                id 'com.github.jazzschmidt.properties-template-plugin'
+            }
+            """
+        }
+
+        testProjectDir.newFile('gradle.properties') << '# intentionally left empty'
+
+        when: 'adding gradle.properties to a git repository'
+        ['git init', 'git add gradle.properties'].each { cmd ->
+            def proc = cmd.execute([], testProjectDir.root)
+            proc.waitFor(200L, TimeUnit.MILLISECONDS)
+        }
+
+        and:
+        def result = build('validateProperties')
+
+        then:
+        result.output.contains('gradle.properties is under version control')
     }
 
     def createProject(String name = 'test-project', Map<String, String> templateProperties, Closure cl) {
@@ -42,15 +91,15 @@ class PluginIntegrationTest extends Specification {
         buildFile << cl()
     }
 
-    def build(List<String> args) {
+    def build(String... args) {
         createRunner()
-                .withArguments(args ?: [])
+                .withArguments(args)
                 .build()
     }
 
-    def buildAndFail(List<String> args) {
+    def buildAndFail(String... args) {
         createRunner()
-                .withArguments(args ?: [])
+                .withArguments(args)
                 .buildAndFail()
     }
 
@@ -59,5 +108,10 @@ class PluginIntegrationTest extends Specification {
                 .withProjectDir(testProjectDir.root)
                 .withPluginClasspath()
                 .withDebug(true)
+    }
+
+    boolean isGitAvailable() {
+        def which = OperatingSystem.current.windows ? 'WHERE' : 'which'
+        return "${which} git".execute().waitFor() == 0
     }
 }
