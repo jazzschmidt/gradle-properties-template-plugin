@@ -20,34 +20,44 @@ class PluginIntegrationTest extends Specification {
 
     def "shows missing properties"() {
         given:
-        settingsFile << "rootProject.name = 'test-project'"
-        buildFile << """
+        createProject([greetend: 'World # Who shall be greeted', greeting: 'Hello']) {
+            """\
             plugins {
                 id 'com.github.jazzschmidt.properties-template-plugin'
             }
-            
-            task helloWorld {
-                doLast {
-                    println 'Hello world!'
-                }
-            }
-        """
-
-        templateFile << """\
-        custom.prop.name=World # Who shall be greeted?
-        custom.prop.greeting=Hello
-        """.stripIndent()
+            """
+        }
 
         when:
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments('helloWorld')
-                .withPluginClasspath()
-                .withDebug(true)
-                .buildAndFail()
+        def result = buildAndFail()
 
         then:
-        result.output.contains('custom.prop.name')
-        result.output.contains('custom.prop.greeting')
+        result.output.contains('greetend')
+        result.output.contains('greeting')
+    }
+
+    def createProject(String name = 'test-project', Map<String, String> templateProperties, Closure cl) {
+        settingsFile << "rootProject.name = '$name'"
+        templateFile << templateProperties.collect { k, v -> "$k=$v" }.join("\n")
+        buildFile << cl()
+    }
+
+    def build(List<String> args) {
+        createRunner()
+                .withArguments(args ?: [])
+                .build()
+    }
+
+    def buildAndFail(List<String> args) {
+        createRunner()
+                .withArguments(args ?: [])
+                .buildAndFail()
+    }
+
+    def createRunner() {
+        GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+                .withPluginClasspath()
+                .withDebug(true)
     }
 }
