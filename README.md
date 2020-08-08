@@ -1,7 +1,11 @@
 # Gradle Properties Template Plugin ![CI with Gradle](https://github.com/jazzschmidt/gradle-properties-template-plugin/workflows/CI%20with%20Gradle/badge.svg?branch=master) <a href="https://plugins.gradle.org/plugin/com.github.jazzschmidt.properties-template-plugin"><img src="https://img.shields.io/badge/Gradle%20Plugin-1.0--SNAPSHOT-brightgreen" /></a>
 
 Ensures that all required project properties are present and not versioned under Git
-to prevent security leaks. Missing properties are listed in a human-readable manner.
+to prevent accidental security leaks. Missing properties are listed in a human-readable
+manner.
+
+Since the build is usually extended over and over again in long-term projects, this
+plugin supports integrating new project properties with a fail-fast approach. 
 
 ## Usage
 
@@ -37,7 +41,9 @@ A problem occurred configuring root project 'my-project'.
 ```
 
 When the `gradle.properties` file is not ignored by Git and the task is not
-otherwise configured, the build fails with such exception:
+otherwise configured, the build also fails with an exception. This way every developer
+can keep his local properties local in the project folder itself.
+
 ```
 * What went wrong:
 Execution failed for task ':validateProperties'.
