@@ -25,10 +25,10 @@ class ValidateProperties extends DefaultTask {
         List<String> missingProperties = []
 
         template.text.readLines().each { String line ->
-            def property = createPropertyTemplate(line)
+            def property = PropertyTemplate.parseTemplate(line)
 
             if (!project.hasProperty(property.name)) {
-                missingProperties += property as String
+                missingProperties += property.format()
             }
         }
 
@@ -52,18 +52,5 @@ class ValidateProperties extends DefaultTask {
             def error = 'Potential security leak: File gradle.properties is versioned under git'
             throw new GradleException(error)
         }
-    }
-
-    protected PropertyTemplate createPropertyTemplate(String line) {
-        def pattern = ~/^([^=]+)=([^#]*)#?(.*)$/
-        def matcher = line =~ pattern
-
-        matcher.find()
-
-        new PropertyTemplate(
-                name: matcher.group(1).trim(),
-                defaultValue: matcher.group(2).trim(),
-                comment: matcher.group(3).trim()
-        )
     }
 }

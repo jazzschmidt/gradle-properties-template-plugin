@@ -4,8 +4,20 @@ class PropertyTemplate {
 
     String name, defaultValue, comment
 
-    @Override
-    String toString() {
+    static PropertyTemplate parseTemplate(String line) {
+        def pattern = ~/^([^=]+)=([^#]*)#?(.*)$/
+        def matcher = line =~ pattern
+
+        matcher.find()
+
+        new PropertyTemplate(
+                name: matcher.group(1).trim(),
+                defaultValue: matcher.group(2).trim(),
+                comment: matcher.group(3).trim()
+        )
+    }
+
+    String format() {
         def text = name
         List<String> appendix = []
 
