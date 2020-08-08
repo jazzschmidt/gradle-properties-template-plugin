@@ -16,8 +16,15 @@ gradlePlugin {
         propertiesTemplatePlugin {
             id = 'com.github.jazzschmidt.properties-template-plugin'
             displayName = 'Propeties Template Plugin'
-            description = 'Validates project properties against a template file to ensure required ones are present'
             implementationClass = 'com.github.jazzschmidt.PropertiesTemplatePlugin'
+            description = '''\
+            Ensures that all required project properties are present and not versioned under Git
+            to prevent accidental security leaks. Missing properties are listed in a human-readable
+            manner.
+            
+            Since the build is usually extended over and over again in long-term projects, this
+            plugin supports integrating new project properties with a fail-fast approach.
+            '''.stripIndent()
         }
     }
 }
