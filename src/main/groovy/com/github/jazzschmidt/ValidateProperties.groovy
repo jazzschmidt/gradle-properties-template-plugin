@@ -14,6 +14,11 @@ class ValidateProperties extends DefaultTask {
 
     boolean checkGitIgnore = true
 
+    @Override
+    String getDescription() {
+        "Validates project properties against a template"
+    }
+
     @TaskAction
     def validate() {
         validateProperties()
@@ -40,7 +45,7 @@ class ValidateProperties extends DefaultTask {
     }
 
     private void validateGitStatus() {
-        def proc = "git status --ignored --short".execute()
+        def proc = "git status --ignored --short".execute([], project.projectDir)
         proc.waitFor(200L, TimeUnit.MILLISECONDS)
 
         if (proc.exitValue() != 0) {

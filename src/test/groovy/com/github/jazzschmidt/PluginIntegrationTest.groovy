@@ -7,6 +7,9 @@ import spock.util.environment.OperatingSystem
 
 import java.util.concurrent.TimeUnit
 
+import static org.gradle.testkit.runner.TaskOutcome.FAILED
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
+
 class PluginIntegrationTest extends Specification {
 
     TemporaryFolder testProjectDir = new TemporaryFolder()
@@ -40,9 +43,10 @@ class PluginIntegrationTest extends Specification {
         }
 
         when:
-        def result = buildAndFail('validateProperties', '--stacktrace')
+        def result = buildAndFail('validateProperties')
 
         then:
+        result.task(':validateProperties').outcome == FAILED
         result.output.contains('greeted')
         result.output.contains('greeting')
     }
@@ -65,6 +69,7 @@ class PluginIntegrationTest extends Specification {
         def result = build('validateProperties', '-Pgreetend=World', '-Pgreeting=Hello')
 
         then:
+        result.task(':validateProperties').outcome == SUCCESS
         !result.output.contains('greeted')
         !result.output.contains('greeting')
     }
@@ -91,8 +96,53 @@ class PluginIntegrationTest extends Specification {
         def result = buildAndFail('validateProperties')
 
         then:
+        result.task(':validateProperties').outcome == FAILED
         result.output.contains('gradle.properties')
         result.output.contains('security leak')
+    }
+
+    def "validateProperties continues when gradle.properties is ignored by git"() {
+        given:
+        createProject([:]) {
+            """\
+            plugins {
+                id 'com.github.jazzschmidt.properties-template-plugin'
+            }
+            """
+        }
+
+        testProjectDir.newFile('gradle.properties') << '# intentionally left empty'
+        testProjectDir.newFile('.gitignore') << 'gradle.properties'
+
+        when: 'adding gradle.properties to a git repository'
+        def proc = 'git init'.execute([], testProjectDir.root)
+        proc.waitFor(200L, TimeUnit.MILLISECONDS)
+
+        and:
+        def result = build('validateProperties')
+
+        then:
+        result.task(':validateProperties').outcome == SUCCESS
+    }
+
+    def "fails the build when template file does not exist"() {
+        given:
+        createProject([:]) {
+            """\
+            plugins {
+                id 'com.github.jazzschmidt.properties-template-plugin'
+            }
+            """
+        }
+
+        when:
+        templateFile.delete()
+
+        and:
+        def result = buildAndFail('validateProperties')
+
+        then:
+        result.task(':validateProperties').outcome == FAILED
     }
 
     def createProject(String name = 'test-project', Map<String, String> templateProperties, Closure cl) {
