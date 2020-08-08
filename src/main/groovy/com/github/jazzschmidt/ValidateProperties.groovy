@@ -45,7 +45,7 @@ class ValidateProperties extends DefaultTask {
     }
 
     private void validateGitStatus() {
-        def proc = "git status --ignored --short".execute()
+        def proc = "git status --ignored --short".execute([], project.projectDir)
         proc.waitFor(200L, TimeUnit.MILLISECONDS)
 
         if (proc.exitValue() != 0) {
