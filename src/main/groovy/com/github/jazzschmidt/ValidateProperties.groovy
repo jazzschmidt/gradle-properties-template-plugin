@@ -14,6 +14,11 @@ class ValidateProperties extends DefaultTask {
 
     boolean checkGitIgnore = true
 
+    @Override
+    String getDescription() {
+        "Validates project properties against a template"
+    }
+
     @TaskAction
     def validate() {
         validateProperties()
