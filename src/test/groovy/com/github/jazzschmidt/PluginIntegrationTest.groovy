@@ -22,6 +22,10 @@ class PluginIntegrationTest extends Specification {
         templateFile = testProjectDir.newFile('gradle.template.properties')
     }
 
+    def teardown() {
+        testProjectDir.delete()
+    }
+
     def "validateProperties task fails the build on missing properties"() {
         given:
         createProject([greetend: 'World # Who shall be greeted', greeting: 'Hello']) {
@@ -40,7 +44,6 @@ class PluginIntegrationTest extends Specification {
         result.output.contains('greeting')
     }
 
-    @PendingFeature
     def "validateProperties task continues the build on present properties"() {
         given:
         createProject([greetend: 'World # Who shall be greeted', greeting: 'Hello']) {
