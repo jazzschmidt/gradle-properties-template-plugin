@@ -34,7 +34,8 @@ pluginBundle {
     vcsUrl = 'https://github.com/jazzschmidt/gradle-properties-template-plugin'
     tags = [
             'properties', 'project', 'template', 'plugin', 'setup', 'prepare',
-            'ci', 'continuous', 'integration', 'secrets', 'default', 'values'
+            'ci', 'continuous', 'integration', 'secrets', 'default', 'values',
+            'security', 'leak', 'fail-fast', 'git', 'gitignore'
     ]
 }
 
