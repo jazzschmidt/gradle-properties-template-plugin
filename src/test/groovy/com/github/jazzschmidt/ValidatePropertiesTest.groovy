@@ -17,7 +17,9 @@ class ValidatePropertiesTest extends Specification {
     def setup() {
         folder.create()
         project = ProjectBuilder.builder().build()
-        task = project.task('validateProperties', type: ValidateProperties)
+        task = project.task('validateProperties', type: ValidateProperties) {
+            checkGitIgnore = false
+        }
     }
 
     def teardown() {

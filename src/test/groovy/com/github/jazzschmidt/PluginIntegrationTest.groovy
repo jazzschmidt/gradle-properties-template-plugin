@@ -2,7 +2,6 @@ package com.github.jazzschmidt
 
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.rules.TemporaryFolder
-import spock.lang.PendingFeature
 import spock.lang.Specification
 import spock.util.environment.OperatingSystem
 
@@ -33,11 +32,15 @@ class PluginIntegrationTest extends Specification {
             plugins {
                 id 'com.github.jazzschmidt.properties-template-plugin'
             }
+            
+            validateProperties {
+                checkGitIgnore = false
+            }
             """
         }
 
         when:
-        def result = buildAndFail('validateProperties')
+        def result = buildAndFail('validateProperties', '--stacktrace')
 
         then:
         result.output.contains('greeted')
@@ -51,6 +54,10 @@ class PluginIntegrationTest extends Specification {
             plugins {
                 id 'com.github.jazzschmidt.properties-template-plugin'
             }
+            
+            validateProperties {
+                checkGitIgnore = false
+            }
             """
         }
 
@@ -62,8 +69,7 @@ class PluginIntegrationTest extends Specification {
         !result.output.contains('greeting')
     }
 
-    @PendingFeature
-    def "validateProperties emits warning when gradle.properties is versioned"() {
+    def "validateProperties fails and emits warning when gradle.properties is versioned"() {
         given:
         createProject([:]) {
             """\
@@ -82,10 +88,11 @@ class PluginIntegrationTest extends Specification {
         }
 
         and:
-        def result = build('validateProperties')
+        def result = buildAndFail('validateProperties')
 
         then:
-        result.output.contains('gradle.properties is under version control')
+        result.output.contains('gradle.properties')
+        result.output.contains('security leak')
     }
 
     def createProject(String name = 'test-project', Map<String, String> templateProperties, Closure cl) {
