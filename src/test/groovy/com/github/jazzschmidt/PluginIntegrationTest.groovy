@@ -104,6 +104,10 @@ class PluginIntegrationTest extends Specification {
                 id 'com.github.jazzschmidt.properties-template-plugin'
             }
             
+            repositories {
+                mavenCentral()
+            }
+            
             ext {
                 JUNIT_VERSION = '4.12'
             }
@@ -115,6 +119,10 @@ class PluginIntegrationTest extends Specification {
         }
         createSubproject('subproject') {
             '''\
+            plugins {
+                id 'java'
+            }
+            
             dependencies {
                 implementation "junit:junit:${JUNIT_VERSION}"
             }
