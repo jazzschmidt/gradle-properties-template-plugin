@@ -7,7 +7,7 @@ class PropertiesTemplatePlugin implements Plugin<Project> {
 
     @Override
     void apply(final Project project) {
-        def task = project.task('validateProperties', type: ValidateProperties) {
+        def task = project.task('validateProperties', type: ValidateProperties, group: 'build') {
             template = project.file('gradle.template.properties')
         }
 
