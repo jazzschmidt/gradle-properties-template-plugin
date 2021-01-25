@@ -74,6 +74,60 @@ class PluginIntegrationTest extends Specification {
         !result.output.contains('greeting')
     }
 
+    def "plugin can be applied to multi-module project"() {
+        given:
+        createProject([:]) {
+            """\
+            plugins {
+                id 'com.github.jazzschmidt.properties-template-plugin'
+            }
+            
+            validateProperties {
+                checkGitIgnore = false
+            }
+            """
+        }
+        createSubproject('subproject') { "" }
+
+        when:
+        def result = build('validateProperties')
+
+        then:
+        result.task(':validateProperties').outcome == SUCCESS
+    }
+
+    def "plugin can be applied to parameterized multi-module project"() {
+        given:
+        createProject([:]) {
+            """\
+            plugins {
+                id 'com.github.jazzschmidt.properties-template-plugin'
+            }
+            
+            ext {
+                JUNIT_VERSION = '4.12'
+            }
+            
+            validateProperties {
+                checkGitIgnore = false
+            }
+            """
+        }
+        createSubproject('subproject') {
+            '''\
+            dependencies {
+                implementation "junit:junit:${JUNIT_VERSION}"
+            }
+            '''
+        }
+
+        when:
+        def result = build('validateProperties')
+
+        then:
+        result.task(':validateProperties').outcome == SUCCESS
+    }
+
     def "validateProperties fails and emits warning when gradle.properties is versioned"() {
         given:
         createProject([:]) {
@@ -146,9 +200,15 @@ class PluginIntegrationTest extends Specification {
     }
 
     def createProject(String name = 'test-project', Map<String, String> templateProperties, Closure cl) {
-        settingsFile << "rootProject.name = '$name'"
+        settingsFile << "rootProject.name = '$name'\n"
         templateFile << templateProperties.collect { k, v -> "$k=$v" }.join("\n")
         buildFile << cl()
+    }
+
+    def createSubproject(String name, Closure cl) {
+        testProjectDir.newFolder(name)
+        settingsFile << "include(':$name')\n"
+        testProjectDir.newFile("$name/build.gradle") << cl()
     }
 
     def build(String... args) {
