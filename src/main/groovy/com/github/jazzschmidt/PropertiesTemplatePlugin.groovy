@@ -11,7 +11,9 @@ class PropertiesTemplatePlugin implements Plugin<Project> {
             template = project.file('gradle.template.properties')
         }
 
-        project.getTasksByName('assemble', true)*.dependsOn(task)
+        project.afterEvaluate {
+            project.getTasksByName('assemble', true)*.dependsOn(task)
+        }
     }
 
 }
