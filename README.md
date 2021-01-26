@@ -12,18 +12,24 @@ plugin supports integrating new project properties with a fail-fast approach.
 This Plugin is published to the Gradle Plugin Portal and can be included with:
 ```groovy
 plugins {
-    id "com.github.jazzschmidt.properties-template-plugin" version "1.0.0"
+    id "com.github.jazzschmidt.properties-template-plugin" version "1.0.1"
 }
 ```
 
 
 Create a `gradle.template.properties` file that reflects all required properties for your build,
-assign default values and add a comment if you like:
+assign default values and add a comment in the line before if you like:
 
 ```properties
-custom.prop.name=World # The item that shall be greeted
-custom.prop.greeting=Hello ${custom.prop.name}
-custom.prop.verbose=true # Incrceases the verbosity of the greeting
+# The item that shall be greeted
+custom.prop.name = World
+custom.prop.greeting = Hello ${custom.prop.name}
+
+# Incrceases the verbosity of the greeting
+custom.prop.verbose = true
+
+# Secret password
+secret=
 ```
 
 When running the build with missing properties, the plugin then emits this error:
@@ -38,11 +44,17 @@ A problem occurred configuring root project 'my-project'.
 > The following properties must be set before building:
    - custom.prop.name (The item that shall be greeted, default: World)
    - custom.prop.greeting (default: Hello ${custom.prop.name})
+   - secret (Secret password)
 ```
+
+*Notice:* Only single lines with an colon assignment (`key=value`) are considered, but
+you are free to implement a custom template parser.
+
+### Git Status Cheking
 
 When the `gradle.properties` file is not ignored by Git and the task is not
 otherwise configured, the build also fails with an exception. This way every developer
-can keep his local properties local in the project folder itself.
+can keep his custom properties in the local project folder itself.
 
 ```
 * What went wrong:
