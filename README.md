@@ -73,5 +73,8 @@ validateProperties {
     template = file('template.properties')
     // Do not check Git status for gradle.properties
     checkGitIgnore = false
+    
+    // Usage of a custom template parser
+    templateParser = new CustomParser()
 }
 ```
