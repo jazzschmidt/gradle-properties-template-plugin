@@ -19,6 +19,7 @@ class DefaultPropertiesParser implements Parser {
         if (isAssignment(line)) {
             def (name, defaultValue) = splitAssignment(line)
             properties.add(new PropertyTemplate(name: name, defaultValue: defaultValue, comment: lastComment))
+            lastComment = null
             return
         }
 
@@ -30,7 +31,11 @@ class DefaultPropertiesParser implements Parser {
     }
 
     private String[] splitAssignment(String line) {
-        line.split('=', 2)
+        def (name, defaultValue) = line.split('=', 2)*.trim()
+        name = name ?: null
+        defaultValue = defaultValue ?: null
+
+        return [name, defaultValue]
     }
 
     private boolean isAssignment(String line) {
