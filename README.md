@@ -47,7 +47,7 @@ A problem occurred configuring root project 'my-project'.
    - secret (Secret password)
 ```
 
-*Notice:* Only single lines with an colon assignment (`key=value`) are considered, but
+*Notice:* Only single lines with an equals assignment (`key=value`) are considered, but
 you are free to implement a custom template parser.
 
 ### Git Status Cheking
