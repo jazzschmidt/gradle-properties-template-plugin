@@ -14,6 +14,8 @@ class ValidateProperties extends DefaultTask {
 
     boolean checkGitIgnore = true
 
+    Parser templateParser = new DefaultPropertiesParser()
+
     @Override
     String getDescription() {
         "Validates project properties against a template"
@@ -27,19 +29,14 @@ class ValidateProperties extends DefaultTask {
     }
 
     private void validateProperties() {
-        List<String> missingProperties = []
-
-        template.text.readLines().each { String line ->
-            def property = PropertyTemplate.parseTemplate(line)
-
-            if (!project.hasProperty(property.name)) {
-                missingProperties += property.format()
-            }
+        List<PropertyTemplate> propertyTemplates = templateParser.parseTemplate(template)
+        List<PropertyTemplate> missingProperties = propertyTemplates.findAll {
+            !project.hasProperty(it.name)
         }
 
         if (!missingProperties.empty) {
             String error = "The following properties must be set before building:\n" +
-                    missingProperties.collect { " - $it" }.join("\n")
+                    missingProperties.collect { " - ${it.format()}" }.join("\n")
             throw new GradleException(error)
         }
     }

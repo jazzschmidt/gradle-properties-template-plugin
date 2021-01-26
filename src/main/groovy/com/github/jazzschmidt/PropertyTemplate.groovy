@@ -4,6 +4,7 @@ class PropertyTemplate {
 
     String name, defaultValue, comment
 
+    @Deprecated
     static PropertyTemplate parseTemplate(String line) {
         def pattern = ~/^([^=]+)=([^#]*)#?(.*)$/
         def matcher = line =~ pattern
@@ -21,7 +22,7 @@ class PropertyTemplate {
         def text = name
         List<String> appendix = []
 
-        if (!comment.empty) {
+        if (comment) {
             appendix += comment
         }
 
