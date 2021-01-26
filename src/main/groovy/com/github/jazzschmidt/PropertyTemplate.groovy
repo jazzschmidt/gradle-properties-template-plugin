@@ -4,32 +4,19 @@ class PropertyTemplate {
 
     String name, defaultValue, comment
 
-    static PropertyTemplate parseTemplate(String line) {
-        def pattern = ~/^([^=]+)=([^#]*)#?(.*)$/
-        def matcher = line =~ pattern
-
-        matcher.find()
-
-        new PropertyTemplate(
-                name: matcher.group(1).trim(),
-                defaultValue: matcher.group(2).trim(),
-                comment: matcher.group(3).trim()
-        )
-    }
-
     String format() {
         def text = name
         List<String> appendix = []
 
-        if (!comment.empty) {
+        if (comment) {
             appendix += comment
         }
 
-        if (!defaultValue.empty) {
+        if (defaultValue) {
             appendix += "default: $defaultValue"
         }
 
-        if (!appendix.empty) {
+        if (appendix) {
             text += " (${appendix.join(', ')})"
         }
 
